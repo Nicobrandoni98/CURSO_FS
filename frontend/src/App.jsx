@@ -15,7 +15,6 @@ const App = () => {
       setNotes(initialNotes);
     });
   }, []);
-  console.log("render ", notes.length, " notes");
 
   const toggleImportanceOf = (id) => {
     const note = notes.find((n) => n.id === id);
