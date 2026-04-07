@@ -5,7 +5,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const Note = require("./models/Note");
-const notFound = require('./middleware/notFound');
+const notFound = require("./middleware/notFound");
 const handleErrors = require("./middleware/handleErrors");
 
 app.use(cors());
@@ -49,20 +49,20 @@ app.delete("/api/notes/:id", (request, response, next) => {
 });
 
 app.put("/api/notes/:id", (request, response, next) => {
-  const { id } = request.params;
-  const note = request.body
+  const { content, important } = request.body;
 
-  const newNoteInfo = {
-    content: note.content,
-    important: note.important
-  }
-
-  Note.findByIdAndUpdate(id, newNoteInfo, {new: true}).then(result => {
-    response.json(result)
-  })
+  Note.findByIdAndUpdate(
+    request.params.id,
+    { content, important },
+    { new: true, runValidators: true, context: "query" },
+  )
+    .then((updatedNote) => {
+      response.json(updatedNote);
+    })
+    .catch((error) => next(error));
 });
 
-app.post("/api/notes", (request, response) => {
+app.post("/api/notes", (request, response, next) => {
   const note = request.body;
 
   if (!note.content) {
@@ -76,12 +76,15 @@ app.post("/api/notes", (request, response) => {
     date: new Date(),
     important: note.important || false,
   });
-  newNote.save().then((savedNote) => {
-    response.json(savedNote);
-  });
+  newNote
+    .save()
+    .then((savedNote) => {
+      response.json(savedNote);
+    })
+    .catch((error) => next(error));
 });
 
-app.use(notFound)
+app.use(notFound);
 
 app.use(handleErrors);
 
