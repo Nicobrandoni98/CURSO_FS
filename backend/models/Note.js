@@ -1,45 +1,20 @@
-const {Schema, model} = require('mongoose')
+const mongoose = require('mongoose')
 
-const noteSchema = new Schema({
+const noteSchema = new mongoose.Schema({
   content: {
     type: String,
-    minLength: 5,
-    required: true
+    required: true,
+    minlength: 5
   },
-  date: Date,
   important: Boolean,
-});
-
-noteSchema.set('toJSON', {
-    transform: (document, returnedObject) => {
-        returnedObject.id = returnedObject._id
-        delete returnedObject._id
-        delete returnedObject.__v
-    }
 })
 
-const Note = model("Note", noteSchema);
+noteSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
 
-/* Note.find({}).then((result) => {
-  console.log(result);
-  mongoose.connection.close();
-});
-
-const note = new Note({
-  content: "HTML is easy",
-  date: new Date(),
-  important: true,
-});
-
-note
-  .save()
-  .then((result) => {
-    console.log(result);
-    mongoose.connection.close();
-  })
-  .catch((err) => {
-    console.error(err);
-  }); */
-
-
-module.exports = Note
+module.exports = mongoose.model('Note', noteSchema)
