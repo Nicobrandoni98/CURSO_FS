@@ -45,11 +45,6 @@ notesRouter.delete('/:id', (request, response, next) => {
 notesRouter.put('/:id', (request, response, next) => {
   const body = request.body
 
-  /* const note = {
-    content: body.content,
-    important: body.important,
-  } */
-
   Note.findByIdAndUpdate(request.params.id, body, { new: true })
     .then(updatedNote => {
       response.json(updatedNote)
